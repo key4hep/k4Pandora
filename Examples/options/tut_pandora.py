@@ -41,16 +41,16 @@ pandoralg.ReadKinkVertices                     = "KinkVertices"
 pandoralg.ReadProngVertices                    = "ProngVertices"                
 pandoralg.ReadSplitVertices                    = "SplitVertices"                
 pandoralg.ReadV0Vertices                       = "V0Vertices"                   
-pandoralg.ReadTracks                           = "MarlinTrkTracks"                       
+pandoralg.ReadTracks                           = "Tracks"                       
 pandoralg.MCRecoCaloAssociation                = "RecoCaloAssociation_ECALBarrel"                       
+pandoralg.MCRecoTrackerAssociation             = "RecoTracksAssociation"                       
 pandoralg.WriteClusterCollection               = "PandoraClusters"              
 pandoralg.WriteReconstructedParticleCollection = "PandoraPFOs" 
 pandoralg.WriteVertexCollection                = "PandoraPFANewStartVertices"               
-pandoralg.AnaOutput = "Ana.root"
 
 pandoralg.PandoraSettingsDefault_xml = "../Pandora/PandoraSettingsDefault.xml"
 #### Do not chage the collection name, only add or remove ###############
-pandoralg.TrackCollections      =  ["MarlinTrkTracks"]
+pandoralg.TrackCollections      =  ["Tracks"]
 pandoralg.ECalCaloHitCollections=  ["ECALBarrel", "ECALEndcap", "ECALOther"]
 pandoralg.HCalCaloHitCollections=  ["HCALBarrel", "HCALEndcap", "HCALOther"]
 pandoralg.LCalCaloHitCollections=  ["LCAL"]
@@ -58,7 +58,7 @@ pandoralg.LHCalCaloHitCollections= ["LHCAL"]
 pandoralg.MuonCaloHitCollections=  ["MUON"]
 pandoralg.MCParticleCollections =  ["MCParticle"]
 pandoralg.RelCaloHitCollections =  ["RecoCaloAssociation_ECALBarrel", "RecoCaloAssociation_ECALEndcap", "RecoCaloAssociation_ECALOther", "RecoCaloAssociation_HCALBarrel", "RecoCaloAssociation_HCALEndcap", "RecoCaloAssociation_HCALOther", "RecoCaloAssociation_LCAL", "RecoCaloAssociation_LHCAL", "RecoCaloAssociation_MUON"]
-pandoralg.RelTrackCollections   =  ["MarlinTrkTracksMCTruthLink"]
+pandoralg.RelTrackCollections   =  ["RecoTrackerAssociation"]
 pandoralg.KinkVertexCollections =  ["KinkVertices"]
 pandoralg.ProngVertexCollections=  ["ProngVertices"]
 pandoralg.SplitVertexCollections=  ["SplitVertices"]
@@ -94,7 +94,7 @@ write.outputCommands = ["keep *"]
 # ApplicationMgr
 from Configurables import ApplicationMgr
 ApplicationMgr(
-        TopAlg = [podioinput,pandoralg],
+        TopAlg = [podioinput,pandoralg,write],
         EvtSel = 'NONE',
         EvtMax = 10,
         ExtSvc = [dsvc, gearSvc],

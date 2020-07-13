@@ -53,7 +53,7 @@ PandoraPFAlg::PandoraPFAlg(const std::string& name, ISvcLocator* svcLoc)
  declareProperty("ReadProngVertices"                   , m_ProngVertices_r,                   "Handle of the ProngVertices input collection" );
  declareProperty("ReadSplitVertices"                   , m_SplitVertices_r,                   "Handle of the SplitVertices input collection" );
  declareProperty("ReadV0Vertices"                      , m_V0Vertices_r,                      "Handle of the V0Vertices    input collection" );
- declareProperty("ReadTracks"                          , m_MarlinTrkTracks_r,                 "Handle of the Tracks        input collection" );
+ declareProperty("ReadTracks"                          , m_Tracks_r,                          "Handle of the Tracks        input collection" );
  declareProperty("MCRecoCaloAssociation"               , m_MCRecoCaloAssociation_r,           "Handle of the MCRecoCaloAssociation input collection" );
  declareProperty("MCRecoTrackerAssociation"            , m_MCRecoTrackerAssociation_r,        "Handle of the MCRecoTrackerAssociation input collection" );
  declareProperty("WriteClusterCollection"              , m_ClusterCollection_w,               "Handle of the ClusterCollection               output collection" );
@@ -101,26 +101,6 @@ StatusCode PandoraPFAlg::initialize()
 {
 
   std::cout<<"init PandoraPFAlg"<<std::endl;
-
-  std::string s_output =m_AnaOutput; 
-  m_fout = new TFile(s_output.c_str(),"RECREATE"); 
-  m_tree = new TTree("evt","tree");
-  m_tree->Branch("m_pReco_PID"   , &m_pReco_PID);
-  m_tree->Branch("m_pReco_mass"  , &m_pReco_mass);
-  m_tree->Branch("m_pReco_energy", &m_pReco_energy);
-  m_tree->Branch("m_pReco_px"    , &m_pReco_px);
-  m_tree->Branch("m_pReco_py"    , &m_pReco_py);
-  m_tree->Branch("m_pReco_pz"    , &m_pReco_pz);
-  m_tree->Branch("m_pReco_charge", &m_pReco_charge);
-
-  m_tree->Branch("m_mc_p_size", &m_mc_p_size);
-  m_tree->Branch("m_mc_pid"   , &m_mc_pid   );
-  m_tree->Branch("m_mc_mass"  , &m_mc_mass  );
-  m_tree->Branch("m_mc_px"    , &m_mc_px    );
-  m_tree->Branch("m_mc_py"    , &m_mc_py    );
-  m_tree->Branch("m_mc_pz"    , &m_mc_pz    );
-  m_tree->Branch("m_mc_charge", &m_mc_charge);
-  m_tree->Branch("m_hasConversion", &m_hasConversion);
 
   // XML file
   m_settings.m_pandoraSettingsXmlFile =  m_PandoraSettingsXmlFile ; 
@@ -309,7 +289,6 @@ StatusCode PandoraPFAlg::execute()
         PANDORA_THROW_RESULT_IF(pandora::STATUS_CODE_SUCCESS, !=, m_pPfoCreator->CreateParticleFlowObjects(*m_CollectionMaps, m_ClusterCollection_w, m_ReconstructedParticleCollection_w, m_VertexCollection_w));
         
         StatusCode sc0 = CreateMCRecoParticleAssociation();
-        StatusCode sc = Ana();
 
         PANDORA_THROW_RESULT_IF(pandora::STATUS_CODE_SUCCESS, !=, PandoraApi::Reset(*m_pPandora));
         this->Reset();
@@ -333,10 +312,7 @@ StatusCode PandoraPFAlg::execute()
 
 StatusCode PandoraPFAlg::finalize()
 {
-  info() << "Finalized. Processed " << _nEvt << " events " <<",saved tree with entries="<<m_tree->GetEntries()<< endmsg;
-  m_fout->cd();
-  m_tree->Write();
-  m_fout->Close();
+  info() << "Finalized. Processed " << _nEvt << " events " << endmsg;
   delete m_pPandora;
   delete m_pGeometryCreator;
   delete m_pCaloHitCreator;
@@ -370,23 +346,6 @@ void PandoraPFAlg::Reset()
     m_pCaloHitCreator->Reset();
     m_pTrackCreator->Reset();
     m_pMCParticleCreator->Reset();
-
-    std::vector<int>()  .swap(m_pReco_PID   );
-    std::vector<float>().swap(m_pReco_mass);
-    std::vector<float>().swap(m_pReco_energy);
-    std::vector<float>().swap(m_pReco_px);
-    std::vector<float>().swap(m_pReco_py);
-    std::vector<float>().swap(m_pReco_pz);
-    std::vector<float>().swap(m_pReco_charge);
-
-    std::vector<int>()  .swap(m_mc_p_size);
-    std::vector<int>()  .swap(m_mc_pid   );
-    std::vector<float>().swap(m_mc_mass  );
-    std::vector<float>().swap(m_mc_px    );
-    std::vector<float>().swap(m_mc_py    );
-    std::vector<float>().swap(m_mc_pz    );
-    std::vector<float>().swap(m_mc_charge);
-    m_hasConversion = 0;
 
     m_CollectionMaps->clear();
 }
@@ -434,7 +393,7 @@ StatusCode PandoraPFAlg::updateMap()
         const edm4hep::VertexCollection* ProngVertices      = nullptr; 
         const edm4hep::VertexCollection* SplitVertices      = nullptr; 
         const edm4hep::VertexCollection* V0Vertices         = nullptr; 
-        const edm4hep::TrackCollection*  MarlinTrkTracks    = nullptr; 
+        const edm4hep::TrackCollection*  Tracks    = nullptr; 
         const edm4hep::MCRecoCaloAssociationCollection*  mcRecoCaloAssociation    = nullptr; 
         const edm4hep::MCRecoTrackerAssociationCollection*  mcRecoTrackerAssociation    = nullptr; 
         StatusCode sc = StatusCode::SUCCESS;
@@ -453,7 +412,7 @@ StatusCode PandoraPFAlg::updateMap()
         sc =  getCol(m_ProngVertices_r , ProngVertices);        
         sc =  getCol(m_SplitVertices_r , SplitVertices);        
         sc =  getCol(m_V0Vertices_r    , V0Vertices   );        
-        sc =  getCol(m_MarlinTrkTracks_r , MarlinTrkTracks   );        
+        sc =  getCol(m_Tracks_r        , Tracks   );        
         sc =  getCol(m_MCRecoCaloAssociation_r , mcRecoCaloAssociation   );        
         sc =  getCol(m_MCRecoTrackerAssociation_r , mcRecoTrackerAssociation);        
 
@@ -547,11 +506,11 @@ StatusCode PandoraPFAlg::updateMap()
             m_CollectionMaps->collectionMap_Vertex["V0Vertices"] = v_cal ;
             for(unsigned int i=0 ; i< V0Vertices->size(); i++) m_CollectionMaps->collectionMap_Vertex ["V0Vertices"].push_back(V0Vertices->at(i));
         }
-        if (NULL != MarlinTrkTracks   )
+        if (NULL != Tracks   )
         {
             std::vector<edm4hep::Track> v_cal;
-            m_CollectionMaps->collectionMap_Track["MarlinTrkTracks"] = v_cal ;
-            for(unsigned int i=0 ; i< MarlinTrkTracks->size(); i++) m_CollectionMaps->collectionMap_Track ["MarlinTrkTracks"].push_back(MarlinTrkTracks->at(i));
+            m_CollectionMaps->collectionMap_Track["Tracks"] = v_cal ;
+            for(unsigned int i=0 ; i< Tracks->size(); i++) m_CollectionMaps->collectionMap_Track ["Tracks"].push_back(Tracks->at(i));
         }
         if (NULL != mcRecoCaloAssociation )
         {
@@ -567,68 +526,6 @@ StatusCode PandoraPFAlg::updateMap()
         }
     return StatusCode::SUCCESS;
 }
-
-
-
-
-StatusCode PandoraPFAlg::Ana()
-{
-    int n_current = m_tree->GetEntries()+1;
-    const edm4hep::ReconstructedParticleCollection* reco_col = m_ReconstructedParticleCollection_w.get();
-    const edm4hep::MCRecoParticleAssociationCollection* reco_associa_col = m_MCRecoParticleAssociation_w.get();
-    for(int i=0; i<reco_col->size();i++)
-    {
-        const edm4hep::ReconstructedParticle pReco = reco_col->at(i);
-        const float px = pReco.getMomentum()[0];
-        const float py = pReco.getMomentum()[1];
-        const float pz = pReco.getMomentum()[2];
-        const float energy = pReco.getEnergy();
-        const float mass = pReco.getMass();
-        const float charge = pReco.getCharge();
-        const int type = pReco.getType();
-        m_pReco_PID.push_back(type);
-        m_pReco_mass.push_back(mass);
-        m_pReco_charge.push_back(charge);
-        m_pReco_energy.push_back(energy);
-        m_pReco_px.push_back(px);
-        m_pReco_py.push_back(py);
-        m_pReco_pz.push_back(pz);
-        for(int j=0; j < reco_associa_col->size(); j++)
-        {
-            if(reco_associa_col->at(j).getRec().id() != pReco.id() ) continue;
-            std::cout<<"MC pid ="<<reco_associa_col->at(j).getSim().getPDG()<<",weight="<<reco_associa_col->at(j).getWeight()<<", px="<<reco_associa_col->at(j).getSim().getMomentum()[0]<<", py="<<reco_associa_col->at(j).getSim().getMomentum()[1]<<",pz="<<reco_associa_col->at(j).getSim().getMomentum()[2]<<std::endl;
-        }
-    }
-    const edm4hep::MCParticleCollection*     MCParticle = nullptr;
-    StatusCode sc = StatusCode::SUCCESS;
-    sc =  getCol(m_mcParCol_r  , MCParticle );
-    if (NULL != MCParticle   )  
-    { 
-        for(unsigned int i=0 ; i< MCParticle->size(); i++)
-        {
-            m_mc_p_size.push_back(MCParticle->at(i).parents_size());
-            m_mc_pid   .push_back(MCParticle->at(i).getPDG());
-            m_mc_mass  .push_back(MCParticle->at(i).getMass());
-            m_mc_px    .push_back(MCParticle->at(i).getMomentum()[0]);
-            m_mc_py    .push_back(MCParticle->at(i).getMomentum()[1]);
-            m_mc_pz    .push_back(MCParticle->at(i).getMomentum()[2]);
-            m_mc_charge.push_back(MCParticle->at(i).getCharge());
-            //if(MCParticle->at(i).parents_size()==0) std::cout<<"MYDBUG evt="<<n_current<<", mc i="<<i<<",px="<<MCParticle->at(i).getMomentum()[0]<<",py="<<MCParticle->at(i).getMomentum()[1]<<",pz="<<MCParticle->at(i).getMomentum()[2]<<std::endl;
-            if (MCParticle->at(i).getPDG() != 22) continue;
-            int hasEm = 0;
-            int hasEp = 0;
-            for(unsigned int j =0 ; j< MCParticle->at(i).daughters_size(); j++)
-            {
-                if      (MCParticle->at(i).getDaughters(j).getPDG() ==  11 ) hasEm=1;
-                else if (MCParticle->at(i).getDaughters(j).getPDG() == -11 ) hasEp=1;
-            }
-            if(hasEm && hasEp) m_hasConversion=1;
-        }
-    }
-    m_tree->Fill();
-    return StatusCode::SUCCESS;
-}
-
 
 // create simple MCRecoParticleAssociation using calorimeter hit only now
 StatusCode PandoraPFAlg::CreateMCRecoParticleAssociation()

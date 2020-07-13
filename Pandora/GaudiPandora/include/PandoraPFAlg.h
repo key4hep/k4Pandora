@@ -3,7 +3,6 @@
 
 #include "FWCore/DataHandle.h"
 #include "GaudiAlg/GaudiAlgorithm.h"
-//#include <gsl/gsl_rng.h>
 #include "edm4hep/ClusterCollection.h"
 #include "edm4hep/ReconstructedParticleCollection.h"
 #include "edm4hep/EventHeaderCollection.h"
@@ -39,9 +38,6 @@
 #include "PfoCreator.h"
 #include "TrackCreator.h"
 
-#include "TROOT.h"
-#include "TTree.h"
-#include "TFile.h"
 
 
 /* PandoraPFAlg ========== <br>
@@ -118,7 +114,6 @@ public:
      */
     const pandora::Pandora *GetPandora() const;
     StatusCode updateMap();
-    StatusCode Ana();
     StatusCode CreateMCRecoParticleAssociation();
 protected:
  
@@ -128,10 +123,10 @@ protected:
 
  
 
-  Gaudi::Property< std::string >              m_PandoraSettingsXmlFile { this, "PandoraSettingsDefault_xml", "/junofs/users/wxfang/MyGit/MarlinPandora/scripts/PandoraSettingsDefault_wx.xml" };
+  Gaudi::Property< std::string >              m_PandoraSettingsXmlFile { this, "PandoraSettingsDefault_xml", "PandoraSettingsDefault.xml" };
   Gaudi::Property<int>                        m_NEventsToSkip                   { this, "NEventsToSkip", 0 };
 
-  Gaudi::Property< std::vector<std::string> > m_TrackCollections{ this, "TrackCollections", {"MarlinTrkTracks"} };
+  Gaudi::Property< std::vector<std::string> > m_TrackCollections{ this, "TrackCollections", {"Tracks"} };
   Gaudi::Property< std::vector<std::string> > m_ECalCaloHitCollections{ this, "ECalCaloHitCollections", {"ECALBarrel","ECALEndcap","ECALOther"} };
   Gaudi::Property< std::vector<std::string> > m_HCalCaloHitCollections{ this, "HCalCaloHitCollections", {"HCALBarrel","HCALEndcap","HCALOther"} };
   Gaudi::Property< std::vector<std::string> > m_LCalCaloHitCollections{ this, "LCalCaloHitCollections", {"LCAL"} };
@@ -139,7 +134,7 @@ protected:
   Gaudi::Property< std::vector<std::string> > m_MuonCaloHitCollections{ this, "MuonCaloHitCollections", {"MUON"} };
   Gaudi::Property< std::vector<std::string> > m_MCParticleCollections{ this, "MCParticleCollections", {"MCParticle"} };
   Gaudi::Property< std::vector<std::string> > m_RelCaloHitCollections{ this, "RelCaloHitCollections", {"RelationCaloHit","RelationMuonHit"} };
-  Gaudi::Property< std::vector<std::string> > m_RelTrackCollections{ this, "RelTrackCollections", {"MarlinTrkTracksMCTruthLink"} };
+  Gaudi::Property< std::vector<std::string> > m_RelTrackCollections{ this, "RelTrackCollections", {"RecoTrackerAssociation"} };
   Gaudi::Property< std::vector<std::string> > m_KinkVertexCollections{ this, "KinkVertexCollections", {"KinkVertices"} };
   Gaudi::Property< std::vector<std::string> > m_ProngVertexCollections{ this, "ProngVertexCollections", {"ProngVertices"} };
   Gaudi::Property< std::vector<std::string> > m_SplitVertexCollections{ this, "SplitVertexCollections", {"SplitVertices"} };
@@ -253,27 +248,6 @@ protected:
   std::string                     m_detectorName;                 ///< The detector name
   unsigned int                    m_nRun;                         ///< The run number
   unsigned int                    m_nEvent;                       ///< The event number
-  //### For Ana #################
-  TFile* m_fout;
-  TTree* m_tree;
-  std::vector<int  > m_pReco_PID;    
-  std::vector<float> m_pReco_mass;
-  std::vector<float> m_pReco_energy;
-  std::vector<float> m_pReco_px;
-  std::vector<float> m_pReco_py;
-  std::vector<float> m_pReco_pz;
-  std::vector<float> m_pReco_charge;
-
-  std::vector<int>   m_mc_p_size;
-  std::vector<int>   m_mc_pid   ;
-  std::vector<float> m_mc_mass  ;
-  std::vector<float> m_mc_px    ;
-  std::vector<float> m_mc_py    ;
-  std::vector<float> m_mc_pz    ;
-  std::vector<float> m_mc_charge;
-  int m_hasConversion;
-
-  Gaudi::Property< std::string >              m_AnaOutput{ this, "AnaOutput", "/junofs/users/wxfang/MyGit/CEPCSW/Reconstruction/PFA/Pandora/GaudiPandora/Ana.root" };
   //######################
   
   DataHandle<edm4hep::MCParticleCollection>     m_mcParCol_r  {"MCParticle", Gaudi::DataHandle::Reader, this};
@@ -292,7 +266,7 @@ protected:
   DataHandle<edm4hep::VertexCollection> m_ProngVertices_r   {"ProngVertices",Gaudi::DataHandle::Reader, this};
   DataHandle<edm4hep::VertexCollection> m_SplitVertices_r   {"SplitVertices",Gaudi::DataHandle::Reader, this};
   DataHandle<edm4hep::VertexCollection> m_V0Vertices_r      {"V0Vertices",Gaudi::DataHandle::Reader, this};
-  DataHandle<edm4hep::TrackCollection>  m_MarlinTrkTracks_r {"MarlinTrkTracks",Gaudi::DataHandle::Reader, this};
+  DataHandle<edm4hep::TrackCollection>  m_Tracks_r {"Tracks",Gaudi::DataHandle::Reader, this};
   DataHandle<edm4hep::MCRecoCaloAssociationCollection>  m_MCRecoCaloAssociation_r {"MCRecoCaloAssociation",Gaudi::DataHandle::Reader, this};
   DataHandle<edm4hep::MCRecoTrackerAssociationCollection>  m_MCRecoTrackerAssociation_r {"MCRecoTrackerAssociation",Gaudi::DataHandle::Reader, this};
 
