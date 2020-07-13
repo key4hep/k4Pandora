@@ -20,7 +20,7 @@ podioinput = PodioInput("PodioReader", collections=[
 ##############################################################################
 from Configurables import GearSvc
 gearSvc  = GearSvc("GearSvc")
-gearSvc.GearXMLFile = "FullDetGear.xml"
+gearSvc.GearXMLFile = "../Pandora/FullDetGear.xml"
 ##############################################################################
 from Configurables import PandoraPFAlg
 
@@ -48,7 +48,7 @@ pandoralg.WriteReconstructedParticleCollection = "PandoraPFOs"
 pandoralg.WriteVertexCollection                = "PandoraPFANewStartVertices"               
 pandoralg.AnaOutput = "Ana.root"
 
-pandoralg.PandoraSettingsDefault_xml = "PandoraSettingsDefault.xml"
+pandoralg.PandoraSettingsDefault_xml = "../Pandora/PandoraSettingsDefault.xml"
 #### Do not chage the collection name, only add or remove ###############
 pandoralg.TrackCollections      =  ["MarlinTrkTracks"]
 pandoralg.ECalCaloHitCollections=  ["ECALBarrel", "ECALEndcap", "ECALOther"]
