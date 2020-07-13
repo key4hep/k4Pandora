@@ -8,7 +8,7 @@ $ cd CEPCSW_Pandora
 $ mkdir build && cd build
 $ cmake .. -DHOST_BINARY_TAG=${BINARY_TAG}
 $ make
-$ ./run gaudirun.py ../Examples/options/tut_detsim_pandora.py
+$ ./run gaudirun.py ../Examples/options/tut_pandora.py
 ```
 ### Some Notices
 * If you want to use it for other experiment, please take care the calo cell id decode part in CaloHitCreator.cpp .
