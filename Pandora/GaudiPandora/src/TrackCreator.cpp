@@ -140,7 +140,6 @@ TrackCreator::~TrackCreator()
 
 pandora::StatusCode TrackCreator::CreateTrackAssociations(const CollectionMaps& collectionMaps)//TODO, due to the lack of full Vertex information
 {
-//    TODO, because the Vertex.getAssociatedParticle() doesn't work for LCIO to plcio transfer
 //    PANDORA_RETURN_RESULT_IF(pandora::STATUS_CODE_SUCCESS, !=, this->ExtractKinks(collectionMaps));
 //    PANDORA_RETURN_RESULT_IF(pandora::STATUS_CODE_SUCCESS, !=, this->ExtractProngsAndSplits(const CollectionMaps& collectionMaps));
 //    PANDORA_RETURN_RESULT_IF(pandora::STATUS_CODE_SUCCESS, !=, this->ExtractV0s(const CollectionMaps& collectionMaps));
