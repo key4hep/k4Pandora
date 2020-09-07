@@ -25,25 +25,25 @@ gearSvc.GearXMLFile = "../Pandora/FullDetGear.xml"
 from Configurables import PandoraPFAlg
 
 pandoralg = PandoraPFAlg("PandoraPFAlg")
-## KEEP same with lcioinput name for the ReadXXX ###########
-pandoralg.ReadMCParticle                       = "MCParticle"                   
-pandoralg.ReadECALBarrel                       = "ECALBarrel"                   
-pandoralg.ReadECALEndcap                       = "ECALEndcap"                   
-pandoralg.ReadECALOther                        = "ECALOther"                    
-pandoralg.ReadHCALBarrel                       = "HCALBarrel"                   
-pandoralg.ReadHCALEndcap                       = "HCALEndcap"                   
-pandoralg.ReadHCALOther                        = "HCALOther"                    
-pandoralg.ReadMUON                             = "MUON"                         
-pandoralg.ReadLCAL                             = "LCAL"                         
-pandoralg.ReadLHCAL                            = "LHCAL"                        
-pandoralg.ReadBCAL                             = "BCAL"                         
-pandoralg.ReadKinkVertices                     = "KinkVertices"                 
-pandoralg.ReadProngVertices                    = "ProngVertices"                
-pandoralg.ReadSplitVertices                    = "SplitVertices"                
-pandoralg.ReadV0Vertices                       = "V0Vertices"                   
-pandoralg.ReadTracks                           = "Tracks"                       
-pandoralg.MCRecoCaloAssociation                = "RecoCaloAssociation_ECALBarrel"                       
-pandoralg.MCRecoTrackerAssociation             = "RecoTracksAssociation"                       
+pandoralg.collections = [
+        "MCParticle:MCParticle",
+        "CalorimeterHit:ECALBarrel",
+        "CalorimeterHit:ECALEndcap",
+        "CalorimeterHit:ECALOther" ,
+        "CalorimeterHit:HCALBarrel",
+        "CalorimeterHit:HCALEndcap",
+        "CalorimeterHit:HCALOther" ,
+        "CalorimeterHit:MUON", 
+        "CalorimeterHit:LCAL", 
+        "CalorimeterHit:LHCAL", 
+        "CalorimeterHit:BCAL", 
+        "Vertex:KinkVertices", 
+        "Vertex:ProngVertices", 
+        "Vertex:SplitVertices", 
+        "Vertex:V0Vertices", 
+        "Track:MarlinTrkTracks", 
+        "MCRecoCaloAssociation:RecoCaloAssociation_ECALBarrel" 
+        ]
 pandoralg.WriteClusterCollection               = "PandoraClusters"              
 pandoralg.WriteReconstructedParticleCollection = "PandoraPFOs" 
 pandoralg.WriteVertexCollection                = "PandoraPFANewStartVertices"               
