@@ -2,7 +2,6 @@
 #include <math.h>
 #include <stdlib.h>
 #include <iostream>
-#include "ced_cli.h"
 
 HelixClass::HelixClass() {
     _const_2pi = 2.0*M_PI;
