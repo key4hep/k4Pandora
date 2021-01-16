@@ -1,51 +1,39 @@
-gaudi_subdir(GaudiPandora v0r0)
 
-find_package(CLHEP REQUIRED)
-find_package(GSL REQUIRED )
-message("GSL: ${GSL_LIBRARIES} ")
-message("GSL INCLUDE_DIRS: ${GSL_INCLUDE_DIRS} ")
-find_package(LCIO REQUIRED ) 
-find_package(GEAR REQUIRED)
-message("ENV GEAR: $ENV{GEAR}")
-
-
-find_package(EDM4HEP REQUIRED )
-include_directories(${EDM4HEP_INCLUDE_DIR})
-
-find_package(PandoraSDK REQUIRED ) 
-include_directories(${PandoraSDK_INCLUDE_DIRS})
-link_libraries(${PandoraSDK_LIBRARIES})
-find_package(LCContent REQUIRED ) 
-include_directories(${LCContent_INCLUDE_DIRS})
-link_libraries(${LCContent_LIBRARIES})
-
-
-list(APPEND CMAKE_MODULE_PATH "$ENV{ROOTSYS}/etc/cmake/")
-find_package(ROOT 5.26.00 REQUIRED COMPONENTS Eve Geom RGL EG)
-
-#In order to use ClusterShape.cc
-include_directories("../../Utility/MarlinUtil/01-08/source/")
-
-gaudi_depends_on_subdirs(
-    Service/GearSvc
-)
-
-set(dir_srcs
-    src/PandoraPFAlg.cpp
-    src/MCParticleCreator.cpp
-    src/GeometryCreator.cpp
-    src/CaloHitCreator.cpp
-    src/TrackCreator.cpp
-    src/PfoCreator.cpp
-    ../../Utility/MarlinUtil/01-08/source/*.cc
-)
-set(dir_include include)
 # Modules
-gaudi_add_module(GaudiPandora ${dir_srcs}
-    INCLUDE_DIRS  ${dir_include} GaudiKernel FWCore CLHEP  ${LCIO_INCLUDE_DIRS} ${ROOT_INCLUDE_DIRS} gear ${GSL_INCLUDE_DIRS} 
-    LINK_LIBRARIES  GaudiKernel FWCore CLHEP ROOT ${LCIO_LIBRARIES} $ENV{GEAR}/lib/libgear.so $ENV{GEAR}/lib/libgearxml.so  ${GSL_LIBRARIES}
-      -Wl,--no-as-needed 
-      EDM4HEP::edm4hep EDM4HEP::edm4hepDict
-      -Wl,--as-needed 
-
+gaudi_add_module(GaudiPandora
+                 SOURCES src/PandoraPFAlg.cpp
+                         src/MCParticleCreator.cpp
+                         src/GeometryCreator.cpp
+                         src/CaloHitCreator.cpp
+                         src/TrackCreator.cpp
+                         src/PfoCreator.cpp
+                         src/Utility.cpp
+                         ../../Utility/MarlinUtil/01-08/source/ClusterShapes.cc
+                         ../../Utility/MarlinUtil/01-08/source/HelixClass.cc
+                         ../../Utility/MarlinUtil/01-08/source/LineClass.cc
+                 LINK 
+                      GearSvc
+                      Gaudi::GaudiKernel
+                      k4FWCore::k4FWCore
+                      ${PandoraSDK_LIBRARIES}
+                      ${LCContent_LIBRARIES} 
+                      ${GSL_LIBRARIES} 
+                      ${CLHEP_LIBRARIES} 
+                      ${ROOT_LIBRARIES}
+                      ${LCIO_LIBRARIES}
+                      ${GEAR_LIBRARIES}
+                      ${DD4hep_COMPONENT_LIBRARIES}
+                      EDM4HEP::edm4hep EDM4HEP::edm4hepDict
 )
+
+target_include_directories(GaudiPandora PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>/include
+  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>/Utility/MarlinUtil/01-08/source
+  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+
+install(TARGETS GaudiPandora
+  EXPORT k4PandoraTargets
+  RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}" COMPONENT bin
+  LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}" COMPONENT shlib
+  COMPONENT dev)
+
