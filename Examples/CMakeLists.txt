@@ -1,36 +1,18 @@
 
-gaudi_subdir(Examples v0r0)
-
-find_package(podio REQUIRED)
-#find_package(plcio REQUIRED)
-find_package(LCIO REQUIRED)
-find_package(EDM4HEP REQUIRED)
-find_package(K4FWCore REQUIRED)
-
-set(Examples_srcs
-    src/Edm4hepTest/*.cpp
-)
-
-# Headers and Libraries
-
-gaudi_install_headers(Examples)
-
 # Modules
-gaudi_add_module(Examples ${Examples_srcs}
-    INCLUDE_DIRS K4FWCore GaudiAlgLib GaudiKernel ${podio_INCLUDE_DIRS} ${LCIO_INCLUDE_DIRS}
-    LINK_LIBRARIES K4FWCore GaudiAlgLib GaudiKernel ${LCIO_LIBRARIES} 
-      # Force loading the libraries.
-      -Wl,--no-as-needed EDM4HEP::edm4hep EDM4HEP::edm4hepDict ${podio_LIBRARIES} podio::podioRootIO -Wl,--as-needed
+gaudi_add_module(k4PandoraExamples
+                 SOURCES src/Edm4hepTest/Edm4hepReadAlg.cpp
+                         src/Edm4hepTest/Edm4hepWriteAlg.cpp
+                 LINK k4FWCore::k4FWCore 
+                      Gaudi::GaudiAlgLib Gaudi::GaudiKernel
+                      ${LCIO_LIBRARIES} 
+                      EDM4HEP::edm4hep EDM4HEP::edm4hepDict
+                      ${podio_LIBRARIES} podio::podioRootIO
 )
 
-# Unit tests
 
-
-
-
-gaudi_add_test(Edm4hepWriteAlg
-               FRAMEWORK options/edm4hep_write.py)
-
-gaudi_add_test(Edm4hepReadAlg
-               FRAMEWORK options/edm4hep_read.py)
-
+install(TARGETS k4PandoraExamples
+  EXPORT CEPCSWTargets
+  RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}" COMPONENT bin
+  LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}" COMPONENT shlib
+  COMPONENT dev)
