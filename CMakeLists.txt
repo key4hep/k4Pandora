@@ -29,7 +29,6 @@ include(cmake/k4PandoraDependencies.cmake)
 # Source Code
 ##############################################################################
 
-add_subdirectory(Examples)
 add_subdirectory(Pandora)
 add_subdirectory(Service)
 
