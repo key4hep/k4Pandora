@@ -10,6 +10,14 @@
 
 #include "edm4hep/Vertex.h"
 #include "edm4hep/ReconstructedParticle.h"
+#if __has_include("edm4hep/EDM4hepVersion.h")
+#include "edm4hep/EDM4hepVersion.h"
+#else
+// Copy the necessary parts from the header above to make whatever we need to work here
+#define EDM4HEP_VERSION(major, minor, patch) ((UINT64_C(major) << 32) | (UINT64_C(minor) << 16) | (UINT64_C(patch)))
+// v00-09 is the last version without the capitalization change of the track vector members
+#define EDM4HEP_BUILD_VERSION EDM4HEP_VERSION(0, 9, 0)
+#endif
 
 #include "gear/BField.h"
 #include "gear/CalorimeterParameters.h"
@@ -874,7 +882,11 @@ int TrackCreator::GetNTpcHits(const edm4hep::Track *const pTrack) const
     // trk->subdetectorHitNumbers()[ 2 * ILDDetID::TPC - 2 ] =  hitCount ;  
     // ---- use hitsInFit :
     //return pTrack->getSubdetectorHitNumbers()[ 2 * lcio::ILDDetID::TPC - 1 ];
+#if EDM4HEP_BUILD_VERSION > EDM4HEP_VERSION(0, 9, 0)
+    return pTrack->getSubdetectorHitNumbers(2 * 4 - 1);// lcio::ILDDetID::TPC=4, still use LCIO code now
+#else
     return pTrack->getSubDetectorHitNumbers(2 * 4 - 1);// lcio::ILDDetID::TPC=4, still use LCIO code now
+#endif
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------
@@ -887,7 +899,11 @@ int TrackCreator::GetNFtdHits(const edm4hep::Track *const pTrack) const
     // trk->subdetectorHitNumbers()[ 2 * ILDDetID::TPC - 2 ] =  hitCount ;  
     // ---- use hitsInFit :
     //return pTrack->getSubdetectorHitNumbers()[ 2 * lcio::ILDDetID::FTD - 1 ];
+#if EDM4HEP_BUILD_VERSION > EDM4HEP_VERSION(0, 9, 0)
+    return pTrack->getSubdetectorHitNumbers( 2 * 3 - 1 );// lcio::ILDDetID::FTD=3
+#else
     return pTrack->getSubDetectorHitNumbers( 2 * 3 - 1 );// lcio::ILDDetID::FTD=3
+#endif
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------
