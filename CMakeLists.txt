@@ -24,6 +24,8 @@ if(NOT CMAKE_CXX_STANDARD MATCHES "14|17")
 endif()
 
 include(cmake/k4PandoraDependencies.cmake)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PandoraSDK_LIBRARY_DIRS}/cmake")
+
 
 ##############################################################################
 # Source Code
